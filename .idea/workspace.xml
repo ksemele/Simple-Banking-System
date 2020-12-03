@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3ff13b17-d0ee-41c9-aacd-902d20759674" name="Default Changelist" comment="" />
+    <list default="true" id="3ff13b17-d0ee-41c9-aacd-902d20759674" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/frameworkLessonHistory/storage.storageData" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/frameworkLessonHistory/storage.storageData" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/frameworkLessonHistory/storage.storageRecordIndex" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/frameworkLessonHistory/storage.storageRecordIndex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Simple Banking System/Advanced system/task-remote-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Simple Banking System/Advanced system/task-remote-info.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Simple Banking System/Card anatomy/task-remote-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Simple Banking System/Card anatomy/task-remote-info.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Simple Banking System/I'm so lite/task-remote-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Simple Banking System/I'm so lite/task-remote-info.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Simple Banking System/Luhn algorithm/task-remote-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Simple Banking System/Luhn algorithm/task-remote-info.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Simple Banking System/task/banking/banking.py" beforeDir="false" afterPath="$PROJECT_DIR$/Simple Banking System/task/banking/banking.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1ky1cxSfqEurhVymidVsiRRZtV5" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -15,6 +28,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -64,6 +78,11 @@
       <option name="presentableId" value="Default" />
       <updated>1606658099575</updated>
       <workItem from="1606658123444" duration="3317000" />
+      <workItem from="1606765457951" duration="2673000" />
+      <workItem from="1606769929585" duration="1986000" />
+      <workItem from="1606852915903" duration="5218000" />
+      <workItem from="1606918845415" duration="1718000" />
+      <workItem from="1606971807693" duration="3897000" />
     </task>
     <servers />
   </component>
@@ -71,28 +90,36 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1606684020127">
+    <state x="640" y="257" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1606769454765">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606684020127" />
-    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1606684020126">
+    <state x="640" y="257" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1606769454765" />
+    <state width="1877" height="259" key="GridCell.Tab.0.bottom" timestamp="1606975510967">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606684020126" />
-    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1606684020126">
+    <state width="1877" height="259" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606975510967" />
+    <state width="1877" height="259" key="GridCell.Tab.0.center" timestamp="1606975510967">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606684020126" />
-    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1606684020127">
+    <state width="1877" height="259" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606975510967" />
+    <state width="1877" height="259" key="GridCell.Tab.0.left" timestamp="1606975510967">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606684020127" />
+    <state width="1877" height="259" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606975510967" />
+    <state width="1877" height="259" key="GridCell.Tab.0.right" timestamp="1606975510967">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="259" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606975510967" />
+    <state x="701" y="163" key="refactoring.ChangeSignatureDialog" timestamp="1606973122257">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="701" y="163" key="refactoring.ChangeSignatureDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1606973122257" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1606660970023">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1606660970023" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Simple_Banking_System$banking.coverage" NAME="banking Coverage Results" MODIFIED="1606684020118" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Simple Banking System/task/banking" />
+    <SUITE FILE_PATH="coverage/Simple_Banking_System$banking.coverage" NAME="banking Coverage Results" MODIFIED="1606975510957" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Simple Banking System/task/banking" />
   </component>
 </project>

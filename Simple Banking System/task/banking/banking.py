@@ -1,7 +1,70 @@
 from random import randint
 
 
-class Menu:
+class Storage:
+	__instance__ = None
+	cards = []
+	cards_counter = 0
+
+	def __init__(self):
+		if Storage.__instance__ is None:
+			Storage.__instance__ = self
+		else:
+			raise Exception("Storage already created!")
+
+	@staticmethod
+	def get_instance():
+		# Статический метод для того, чтобы вытащить текущий экземпляр
+		# При извлечении объекта с помощью метода get_instance() мы проверяем,
+		# доступен ли существующий экземпляр, и возвращаем его.
+		# Если нет, то создаем его и опять возвращаем.
+		if not Storage.__instance__:
+			Storage()
+		return Storage.__instance__
+
+	def add_card(self, new_card):  # todo add only if !found same number in storage
+		self.cards.append(new_card)
+
+	def create_account(self):
+		new_card = Account()  # todo rebuild to Storage.method
+		if new_card.card_num in [x.card_num for x in self.cards]:
+			new_card.rand_card_number()
+		print(new_card)
+
+	def search_card_pin(self, card_num):
+		if self.cards_counter > 0:
+			account = self.cards[0]
+			if card_num in [account.card_num for account in self.cards]:  # todo how get account?
+				return account.pin
+			else:
+				return None
+		else:
+			return None
+
+
+class Account:  # todo login()  --> account
+	card_num = '400000'  # 0000000000'  # 400000
+	pin = ''
+	balance = ''
+
+	def __init__(self):
+		self.rand_card_number()
+		self.rand_pin()
+
+	def rand_card_number(self):
+		self.card_num = self.card_num + ''.join(str(randint(0, 9)) for i in range(10))  # wow!
+
+	def rand_pin(self):
+		self.pin = ''.join(str(randint(0, 4)) for i in range(10))
+
+	def print_balance(self):
+		print(f'Balance: {self.balance}')
+
+	def __str__(self):
+		return 'Your card number:\n{}\nYour card PIN:\n{}\n'.format(self.card_num, self.pin)
+
+
+class MenuMain:
 	elems = ['1. Create an account', '2. Log into account', '0. Exit']
 
 	def __init__(self):
@@ -10,6 +73,19 @@ class Menu:
 	def print(self):
 		for each in self.elems:
 			print(each)
+
+
+def menu_main_choice_treat(choice):
+	if choice == '0':  # exit
+		print('Bye!')
+	elif choice == '1':  # todo Create account {1: choice_1()}
+		storage = Storage.get_instance()
+		storage.create_account()
+		storage.cards_counter += 1
+	elif choice == '2':  # login
+		menu_login_treat()
+	else:
+		print('Wrong choice\n')
 
 
 class MenuLogin:
@@ -24,64 +100,39 @@ class MenuLogin:
 			print(each)
 
 
-class Card:
-	number = '400000'  # 0000000000'  # 400000
-	pin = ''
-	balance = 0
+def menu_login_treat():
+	choice = ''  # {1: , 2:}  # ключи д.б. неизменяемые (mutable obj)
+	if try_login() == True:
+		storage = Storage.get_instance()
+		while choice != '0':
+			menu_login.print()
+			choice = input()
+			if choice == '1':  # balance
+				print('Balance: ')  # todo acc balance
 
-	def __init__(self):
-		self.rand_card_number()
-		self.rand_pin()
-
-	def rand_card_number(self):
-		for i in range(1, 10):
-			i = randint(0, 9)
-			self.number += str(i)
-
-	def rand_pin(self):
-		for i in range(0, 4):
-			i = randint(0, 9)
-			self.pin += str(i)
-
-	def __str__(self):
-		return 'Your card number:\n{}\nYour card PIN:\n{}'.format(self.number, self.pin)
-
-
-class Storage:  # todo find_card() in storage
-	cards = []
-	cards_counter = 0
-
-	def __init__(self):
-		pass
-
-	def add_card(self, new_card):  # todo add only if !found same number in storage
-		self.cards.append(new_card)
-
-
-def create_card():
-	new_card = Card()  # todo simplify to 1 return
-	print(new_card)
-	return new_card
-
-
-def choice_treat(choice, storage):
-	if choice == 0:  # exit
-		print('_0')
-	elif choice == 1:  # Create account
-		# print('_1')
-		storage.add_card(create_card())
-		storage.cards_counter += 1
-	elif choice == 2:  # login
-		menu_login.print()
+			if choice == '2':  # Log out
+				print('You have successfully logged out!\n')
 	else:
-		print('Wrong choice')
+		print('Wrong card number or PIN!')
+
+
+def try_login():
+	storage = Storage.get_instance()
+	print('Enter your card number:')
+	card_num = input()
+	print('Enter your PIN:')
+	pin = input()
+	if storage.search_card_pin(card_num):
+		return True
+	else:
+		return False
 
 
 storage = Storage()
-menu = Menu()
+menu = MenuMain()
 menu_login = MenuLogin()
-
-menu.print()
-print(storage.cards)
-choice = int(input())
-choice_treat(choice, storage)
+choice = ''
+while choice != '0':
+	menu.print()
+	choice = input()
+	menu_main_choice_treat(choice)
