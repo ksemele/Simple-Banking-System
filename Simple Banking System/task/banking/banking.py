@@ -33,7 +33,6 @@ class Storage:
 
 	def search_card_pin(self, card_num):
 		if self.cards_counter > 0:
-			account = self.cards[0]
 			if card_num in [account.card_num for account in self.cards]:  # todo how get account?
 				return account.pin
 			else:
@@ -55,7 +54,7 @@ class Account:  # todo login()  --> account
 		self.card_num = self.card_num + ''.join(str(randint(0, 9)) for i in range(10))  # wow!
 
 	def rand_pin(self):
-		self.pin = ''.join(str(randint(0, 4)) for i in range(10))
+		self.pin = ''.join(str(randint(0, 9)) for i in range(4))
 
 	def print_balance(self):
 		print(f'Balance: {self.balance}')
@@ -90,7 +89,6 @@ def menu_main_choice_treat(choice):
 
 class MenuLogin:
 	elems = ['1. Balance', '2. Log out', '0. Exit']
-		# ['Enter your card number:', 'Enter your PIN:', 'Wrong card number or PIN!', 'You have successfully logged in!']
 
 	def __init__(self):
 		pass
@@ -102,7 +100,7 @@ class MenuLogin:
 
 def menu_login_treat():
 	choice = ''  # {1: , 2:}  # ключи д.б. неизменяемые (mutable obj)
-	if try_login() == True:
+	if try_login():
 		storage = Storage.get_instance()
 		while choice != '0':
 			menu_login.print()
@@ -117,6 +115,7 @@ def menu_login_treat():
 
 
 def try_login():
+	# ['Enter your card number:', 'Enter your PIN:', 'Wrong card number or PIN!', 'You have successfully logged in!']
 	storage = Storage.get_instance()
 	print('Enter your card number:')
 	card_num = input()
