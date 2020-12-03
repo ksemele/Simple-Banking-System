@@ -1,10 +1,41 @@
 from random import randint
 
 
+class Account:  # todo login()  --> account
+	card_num = ''  # 0000000000'  # 400000
+	pin = ''
+	balance = 0
+
+	def __init__(self):
+		pass
+
+	def empty(self):
+		self.card_num = ''
+		self.pin = ''
+		self. balance = 0
+
+	def new_account(self):
+		self.rand_card_number()
+		self.rand_pin()
+
+	def rand_card_number(self):
+		self.card_num = '400000' + ''.join(str(randint(0, 9)) for i in range(10))  # wow!
+
+	def rand_pin(self):
+		self.pin = ''.join(str(randint(0, 9)) for i in range(4))
+
+	def print_balance(self):
+		print(f'Balance: {self.balance}\n')
+
+	def __str__(self):
+		return 'Your card number:\n{}\nYour card PIN:\n{}\n'.format(self.card_num, self.pin)
+
+
 class Storage:
 	__instance__ = None
 	cards = []
 	cards_counter = 0
+	login_in = Account()
 
 	def __init__(self):
 		if Storage.__instance__ is None:
@@ -22,47 +53,25 @@ class Storage:
 			Storage()
 		return Storage.__instance__
 
-	def add_card(self, new_card):  # todo add only if !found same number in storage
+	def add_card(self, new_card):
 		self.cards.append(new_card)
 
 	def create_account(self):
-		new_card = Account()  # todo rebuild to Storage.method
+		new_card = Account()
+		new_card.new_account()
 		if new_card.card_num in [x.card_num for x in self.cards]:
 			new_card.rand_card_number()
 		self.add_card(new_card)
 		print(new_card)
 
 	def search_card_pin(self, card_num):
-		print('input num', card_num)  # todo del
 		passbase = {c.card_num: c.pin for c in self.cards}
-		print('total cards', storage.cards_counter)  # todo del
-		if self.cards_counter > 0:
-			print('pin:', passbase[card_num])  # todo del
+		if self.cards_counter > 0 and card_num in passbase:
+			storage.login_in.card_num = card_num
+			storage.login_in.pin = passbase[card_num]
 			return passbase[card_num]
 		else:
 			return None
-
-
-class Account:  # todo login()  --> account
-	card_num = '400000'  # 0000000000'  # 400000
-	pin = ''
-	balance = ''
-
-	def __init__(self):
-		self.rand_card_number()
-		self.rand_pin()
-
-	def rand_card_number(self):
-		self.card_num = self.card_num + ''.join(str(randint(0, 9)) for i in range(10))  # wow!
-
-	def rand_pin(self):
-		self.pin = ''.join(str(randint(0, 9)) for i in range(4))
-
-	def print_balance(self):
-		print(f'Balance: {self.balance}')
-
-	def __str__(self):
-		return 'Your card number:\n{}\nYour card PIN:\n{}\n'.format(self.card_num, self.pin)
 
 
 class MenuMain:
@@ -104,30 +113,34 @@ def menu_login_treat():
 	choice = ''  # {1: , 2:}  # ключи д.б. неизменяемые (mutable obj)
 	if try_login():
 		storage = Storage.get_instance()
+		print('You have successfully logged in!\n')
 		while choice != '0':
 			menu_login.print()
 			choice = input()
 			if choice == '1':  # balance
-				print('Balance: ')  # todo acc balance
-
+				storage.login_in.print_balance()
+				# print('Balance: ', storage.login_in.balance)
 			if choice == '2':  # Log out
+				storage.login_in.empty()
 				print('You have successfully logged out!\n')
+				choice = '0'
+			if choice == '0':
+				exit()
 	else:
-		print('Wrong card number or PIN!')
+		print('Wrong card number or PIN!\n')
 
 
 def try_login():
-	# ['Enter your card number:', 'Enter your PIN:', 'Wrong card number or PIN!', 'You have successfully logged in!']
 	storage = Storage.get_instance()
 	print('Enter your card number:')
 	card_num = input()
 	print('Enter your PIN:')
 	pin = input()
 	if storage.search_card_pin(card_num) is not None:
-		print('TRUUUE')  # todo del
-		return True
+		storage.logged_in = card_num
+		if storage.login_in.pin == pin:
+			return True
 	else:
-		print('FAAALSEEEE')  # todo del
 		return False
 
 
