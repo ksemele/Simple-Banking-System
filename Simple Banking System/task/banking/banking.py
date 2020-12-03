@@ -29,14 +29,16 @@ class Storage:
 		new_card = Account()  # todo rebuild to Storage.method
 		if new_card.card_num in [x.card_num for x in self.cards]:
 			new_card.rand_card_number()
+		self.add_card(new_card)
 		print(new_card)
 
 	def search_card_pin(self, card_num):
+		print('input num', card_num)  # todo del
+		passbase = {c.card_num: c.pin for c in self.cards}
+		print('total cards', storage.cards_counter)  # todo del
 		if self.cards_counter > 0:
-			if card_num in [account.card_num for account in self.cards]:  # todo how get account?
-				return account.pin
-			else:
-				return None
+			print('pin:', passbase[card_num])  # todo del
+			return passbase[card_num]
 		else:
 			return None
 
@@ -121,9 +123,11 @@ def try_login():
 	card_num = input()
 	print('Enter your PIN:')
 	pin = input()
-	if storage.search_card_pin(card_num):
+	if storage.search_card_pin(card_num) is not None:
+		print('TRUUUE')  # todo del
 		return True
 	else:
+		print('FAAALSEEEE')  # todo del
 		return False
 
 
