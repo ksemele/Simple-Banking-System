@@ -1,7 +1,19 @@
 from random import randint
+import sqlite3
+conn = sqlite3.connect('card.s3db')
+cur = conn.cursor()
+
+cur.execute("""CREATE TABLE IF NOT EXISTS card(
+	id INT,
+	number TEXT,
+	pin TEXT,
+	balance INT DEFAULT 0
+	);""")
+conn.commit()
 
 
 class Account:
+	id = -1
 	card_num = ''
 	pin = ''
 	balance = 0
@@ -60,6 +72,7 @@ def is_odd(num):
 	else:
 		return False  # Even (четное)
 
+
 class Storage:
 	__instance__ = None
 	cards = []
@@ -69,6 +82,10 @@ class Storage:
 	def __init__(self):
 		if Storage.__instance__ is None:
 			Storage.__instance__ = self
+			# self.cards = cur.execute('SELECT ')  # id number pin balance
+			# todo 1. SELECT *
+			# todo 2. from each line in cards -> create Account Class
+			# todo 3. add all new_accounts to tmp_Storage
 		else:
 			raise Exception("Storage already created!")
 
