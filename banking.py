@@ -1,15 +1,5 @@
 from random import randint
 import sqlite3
-conn = sqlite3.connect('card.s3db')
-cur = conn.cursor()
-
-cur.execute("""CREATE TABLE IF NOT EXISTS card(
-	id INT,
-	number TEXT,
-	pin TEXT,
-	balance INT DEFAULT 0
-	);""")
-conn.commit()
 
 
 class Account:
@@ -31,14 +21,13 @@ class Account:
 		self.rand_pin()
 
 	def rand_card_number(self):
-		# self.card_num = '400000' + ''.join(str(randint(0, 9)) for i in range(10))  # wow!
 		self.card_num = '400000' + ''.join(str(randint(0, 9)) for i in range(9))  # wow!
 		self.calc_luhn_last()
 
 	def rand_pin(self):
 		self.pin = ''.join(str(randint(0, 9)) for i in range(4))
 
-	def calc_luhn_last(self):  # todo in work
+	def calc_luhn_last(self):
 		checksum = []
 		odd = 1
 		for each in self.card_num:
@@ -59,6 +48,10 @@ class Account:
 			calc += 1
 		self.card_num = self.card_num + ''.join(str(calc - res))
 
+	def save_to_sql(self, cur, conn):
+		cur.execute('INSERT INTO card VALUES (?,?,?,?);', (self.id, self.card_num, self.pin, self.balance))
+		conn.commit()
+
 	def print_balance(self):
 		print(f'Balance: {self.balance}\n')
 
@@ -73,6 +66,17 @@ def is_odd(num):
 		return False  # Even (четное)
 
 
+def convert_sql_to_new_account(sql_element):
+	# print('parse this:', sql_element)  # todo tmp print RAW data
+	new_account = Account()
+	new_account.empty()
+	new_account.id = sql_element[0]
+	new_account.card_num = sql_element[1]
+	new_account.pin = sql_element[2]
+	new_account.balance = sql_element[3]
+	return new_account
+
+
 class Storage:
 	__instance__ = None
 	cards = []
@@ -82,6 +86,21 @@ class Storage:
 	def __init__(self):
 		if Storage.__instance__ is None:
 			Storage.__instance__ = self
+			cur.execute('SELECT COUNT(*) from card;')
+			# print('total accounts in SQL:', cur.fetchone()[0])  # todo tmp print
+			cur.execute('SELECT * from card;')
+			self.sql_cur = cur
+			self.conn = conn
+			for each in self.sql_cur:
+				self.add_account(new_card=convert_sql_to_new_account(each))
+
+			# tmp printing all cards
+			# print('readed cards:')
+			# for each in self.cards:
+			# 	print(each)
+			# 	each.print_balance()
+
+
 			# self.cards = cur.execute('SELECT ')  # id number pin balance
 			# todo 1. SELECT *
 			# todo 2. from each line in cards -> create Account Class
@@ -99,7 +118,7 @@ class Storage:
 			Storage()
 		return Storage.__instance__
 
-	def add_card(self, new_card):
+	def add_account(self, new_card):
 		self.cards.append(new_card)
 
 	def create_account(self):
@@ -107,7 +126,8 @@ class Storage:
 		new_card.new_account()
 		if new_card.card_num in [x.card_num for x in self.cards]:
 			new_card.rand_card_number()
-		self.add_card(new_card)
+		self.add_account(new_card)
+		new_card.save_to_sql(self.sql_cur, self.conn)
 		print(new_card)
 
 	def search_card_pin(self, card_num):
@@ -189,6 +209,16 @@ def try_login():
 		return False
 
 
+conn = sqlite3.connect('card.s3db')
+cur = conn.cursor()
+
+cur.execute("""CREATE TABLE IF NOT EXISTS card(
+	id INT,
+	number TEXT,
+	pin TEXT,
+	balance INT DEFAULT 0
+	);""")
+conn.commit()
 storage = Storage()
 menu = MenuMain()
 menu_login = MenuLogin()
