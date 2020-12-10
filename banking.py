@@ -63,7 +63,7 @@ def is_odd(num):
 	if num % 2:
 		return True  # Odd (нечетное)
 	else:
-		return False  # Even (четное)
+		return False  # Even
 
 
 def convert_sql_to_new_account(sql_element):
@@ -86,25 +86,12 @@ class Storage:
 	def __init__(self):
 		if Storage.__instance__ is None:
 			Storage.__instance__ = self
-			# cur.execute('SELECT COUNT(*) from card;')
-			# print('total accounts in SQL:', cur.fetchone()[0])  # todo tmp print
 			cur.execute('SELECT * from card;')
 			self.sql_cur = cur
 			self.conn = conn
 			for each in self.sql_cur:
 				self.add_account(new_card=convert_sql_to_new_account(each))
-
-			# tmp printing all cards
-			# print('readed cards:')
-			# for each in self.cards:
-			# 	print(each)
-			# 	each.print_balance()
-
-
-			# self.cards = cur.execute('SELECT ')  # id number pin balance
-			# todo 1. SELECT *
-			# todo 2. from each line in cards -> create Account Class
-			# todo 3. add all new_accounts to tmp_Storage
+			self.cards_counter = len(self.cards)
 		else:
 			raise Exception("Storage already created!")
 
@@ -125,6 +112,7 @@ class Storage:
 			new_card.rand_card_number()
 		self.add_account(new_card)
 		new_card.save_to_sql(self.sql_cur, self.conn)
+		self.cards_counter += 1
 		print(new_card)
 
 	def search_card_pin(self, card_num):
@@ -148,17 +136,25 @@ class MenuMain:
 			print(each)
 
 
-def menu_main_choice_treat(choice):
-	if choice == '0':  # exit
-		print('Bye!')
-	elif choice == '1':  # create account
-		storage = Storage.get_instance()
-		storage.create_account()
-		storage.cards_counter += 1
-	elif choice == '2':  # login
-		menu_login_treat()
-	else:
-		print('Wrong choice\n')
+def menu_main_choice_treat():
+	storage = Storage.get_instance()
+	menu_funcs = {
+		0: exit_banking,
+		1: storage.create_account,
+		2: menu_login_treat,
+	}
+	while 1:
+		menu.print_menu()
+		try:
+			choice = int(input())
+			menu_funcs.get(choice)()
+		except ValueError:
+			pass
+
+
+def exit_banking():
+	print('Bye!')
+	exit()
 
 
 class MenuLogin:
@@ -173,24 +169,25 @@ class MenuLogin:
 
 
 def menu_login_treat():
-	choice = ''
+	storage = Storage.get_instance()
+	menu_funcs = {
+		0: exit_banking,
+		1: storage.login_in.print_balance,
+		2: storage.login_in.empty,
+	}
 	if try_login():
-		storage = Storage.get_instance()
 		print('You have successfully logged in!\n')
-		while choice != '0':
+		while 1:
 			menu_login.print_menu()
-			choice = input()
-			if choice == '1':  # balance
-				storage.login_in.print_balance()
-			elif choice == '2':  # Log out
-				storage.login_in.empty()
-				print('You have successfully logged out!\n')
-				return 0
-			elif choice == '0':
-				exit()
+			try:
+				choice = int(input())
+				menu_funcs.get(choice)()
+				if choice == 2:
+					break
+			except ValueError:
+				pass
 	else:
 		print('Wrong card number or PIN!\n')
-		return -1
 
 
 def try_login():
@@ -219,9 +216,9 @@ cur.execute("""CREATE TABLE IF NOT EXISTS card(
 conn.commit()
 storage = Storage()
 menu = MenuMain()
+
+for each in storage.cards:  # todo del - print all accounts in storage
+	print(each.card_num, each.pin)
+
 menu_login = MenuLogin()
-choice = ''
-while choice != '0':
-	menu.print_menu()
-	choice = input()
-	menu_main_choice_treat(choice)
+menu_main_choice_treat()
