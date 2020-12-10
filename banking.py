@@ -3,7 +3,7 @@ import sqlite3
 
 
 class Account:
-	id = -1
+	id = 0
 	card_num = ''
 	pin = ''
 	balance = 0
@@ -86,7 +86,7 @@ class Storage:
 	def __init__(self):
 		if Storage.__instance__ is None:
 			Storage.__instance__ = self
-			cur.execute('SELECT COUNT(*) from card;')
+			# cur.execute('SELECT COUNT(*) from card;')
 			# print('total accounts in SQL:', cur.fetchone()[0])  # todo tmp print
 			cur.execute('SELECT * from card;')
 			self.sql_cur = cur
@@ -110,10 +110,7 @@ class Storage:
 
 	@staticmethod
 	def get_instance():
-		# Статический метод для того, чтобы вытащить текущий экземпляр
-		# При извлечении объекта с помощью метода get_instance() мы проверяем,
-		# доступен ли существующий экземпляр, и возвращаем его.
-		# Если нет, то создаем его и опять возвращаем.
+
 		if not Storage.__instance__:
 			Storage()
 		return Storage.__instance__
@@ -146,7 +143,7 @@ class MenuMain:
 	def __init__(self):
 		pass
 
-	def print(self):
+	def print_menu(self):
 		for each in self.elems:
 			print(each)
 
@@ -170,7 +167,7 @@ class MenuLogin:
 	def __init__(self):
 		pass
 
-	def print(self):
+	def print_menu(self):
 		for each in self.elems:
 			print(each)
 
@@ -181,18 +178,19 @@ def menu_login_treat():
 		storage = Storage.get_instance()
 		print('You have successfully logged in!\n')
 		while choice != '0':
-			menu_login.print()
+			menu_login.print_menu()
 			choice = input()
 			if choice == '1':  # balance
 				storage.login_in.print_balance()
-			if choice == '2':  # Log out
+			elif choice == '2':  # Log out
 				storage.login_in.empty()
 				print('You have successfully logged out!\n')
-				choice = '0'
-			if choice == '0':
+				return 0
+			elif choice == '0':
 				exit()
 	else:
 		print('Wrong card number or PIN!\n')
+		return -1
 
 
 def try_login():
@@ -213,10 +211,10 @@ conn = sqlite3.connect('card.s3db')
 cur = conn.cursor()
 
 cur.execute("""CREATE TABLE IF NOT EXISTS card(
-	id INT,
+	id INTEGER,
 	number TEXT,
 	pin TEXT,
-	balance INT DEFAULT 0
+	balance INTEGER DEFAULT 0
 	);""")
 conn.commit()
 storage = Storage()
@@ -224,6 +222,6 @@ menu = MenuMain()
 menu_login = MenuLogin()
 choice = ''
 while choice != '0':
-	menu.print()
+	menu.print_menu()
 	choice = input()
 	menu_main_choice_treat(choice)
