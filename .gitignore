@@ -4,3 +4,5 @@
 course-info.yaml
 
 venv/
+
+__pycache__/
