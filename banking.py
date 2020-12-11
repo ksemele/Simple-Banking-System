@@ -48,9 +48,27 @@ class Account:
 			calc += 1
 		self.card_num = self.card_num + ''.join(str(calc - res))
 
-	def save_to_sql(self, cur, conn):
+	def save_to_sql(self):
 		cur.execute('INSERT INTO card VALUES (?,?,?,?);', (self.id, self.card_num, self.pin, self.balance))
 		conn.commit()
+
+	def add_income(self):
+		print('Enter income:\n')
+		try:
+			income = int(input())
+			print('Add ', income, 'to ->', self.balance)  # todo del
+			self.balance += income
+			cur.execute('UPDATE card SET balance = ? WHERE number = ?;', (self.balance, self.card_num))
+			conn.commit()
+			print('Income was added!\n')
+		except ValueError:
+			print('Error input!\n')
+
+	def delete_account(self):
+		cur.execute('DELETE from card WHERE number = (?);', (self.card_num,))
+		conn.commit()
+		self.empty()  # todo !!!! account stay in local storage !!! need delete it
+		print('The account has been closed!\n')
 
 	def print_balance(self):
 		print(f'Balance: {self.balance}\n')
@@ -90,7 +108,7 @@ class Storage:
 			self.sql_cur = cur
 			self.conn = conn
 			for each in self.sql_cur:
-				self.add_account(new_card=convert_sql_to_new_account(each))
+				self.add_account(new_account=convert_sql_to_new_account(each))
 			self.cards_counter = len(self.cards)
 		else:
 			raise Exception("Storage already created!")
@@ -102,8 +120,8 @@ class Storage:
 			Storage()
 		return Storage.__instance__
 
-	def add_account(self, new_card):
-		self.cards.append(new_card)
+	def add_account(self, new_account):
+		self.cards.append(new_account)
 
 	def create_account(self):
 		new_card = Account()
@@ -111,7 +129,7 @@ class Storage:
 		if new_card.card_num in [x.card_num for x in self.cards]:
 			new_card.rand_card_number()
 		self.add_account(new_card)
-		new_card.save_to_sql(self.sql_cur, self.conn)
+		new_card.save_to_sql()
 		self.cards_counter += 1
 		print(new_card)
 
@@ -158,10 +176,7 @@ def exit_banking():
 
 
 class MenuLogin:
-	elems = ['1. Balance', '2. Log out', '0. Exit']
-
-	def __init__(self):
-		pass
+	elems = ['1. Balance', '2. Add income', '3. Do transfer', '4. Close account', '5. Log out', '0. Exit']
 
 	def print_menu(self):
 		for each in self.elems:
@@ -173,7 +188,9 @@ def menu_login_treat():
 	menu_funcs = {
 		0: exit_banking,
 		1: storage.login_in.print_balance,
-		2: storage.login_in.empty,
+		2: storage.login_in.add_income,
+		4: storage.login_in.delete_account,
+		5: storage.login_in.empty,
 	}
 	if try_login():
 		print('You have successfully logged in!\n')
@@ -182,7 +199,7 @@ def menu_login_treat():
 			try:
 				choice = int(input())
 				menu_funcs.get(choice)()
-				if choice == 2:
+				if choice == 5 or choice == 4:
 					break
 			except ValueError:
 				pass
@@ -199,6 +216,9 @@ def try_login():
 	if storage.search_card_pin(card_num) is not None:
 		storage.logged_in = card_num
 		if storage.login_in.pin == pin:
+			cur.execute('SELECT balance FROM card WHERE number = (?)', (storage.login_in.card_num,))
+			for each in cur:
+				storage.login_in.balance = each[0]  # todo how i can do this wich another variant???
 			return True
 	else:
 		return False
@@ -218,7 +238,7 @@ storage = Storage()
 menu = MenuMain()
 
 for each in storage.cards:  # todo del - print all accounts in storage
-	print(each.card_num, each.pin)
+	print(each.card_num, each.pin, each.balance)
 
 menu_login = MenuLogin()
 menu_main_choice_treat()
