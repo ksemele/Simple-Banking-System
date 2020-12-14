@@ -22,9 +22,12 @@ $ python3 -m venv venv
 Second, activate it and install needed packages:
 ```$ source venv/bin/activate
 (venv)$ pip3 install -r requirements.txt
+```
+Now you can run the program:
+```
 (venv)$ ./banking.py
 ```
-  
+
 After work don't remember exit venv:
 ```
 (venv)$ deactivate
