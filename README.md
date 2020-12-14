@@ -18,7 +18,9 @@ If you use `<venv>` (I highly recommend do this)
 First, make new `<venv>`:
 ```
 $ python3 -m venv venv
-$ source venv/bin/activate
+```
+Second, activate it and install needed packages:
+```$ source venv/bin/activate
 (venv)$ pip3 install -r requirements.txt
 (venv)$ ./banking.py
 ```
