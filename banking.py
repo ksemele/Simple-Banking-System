@@ -52,6 +52,9 @@ class Account:
         cur.execute('INSERT INTO card VALUES (?,?,?,?);', (self.id, self.card_num, self.pin, self.balance))
         conn.commit()
 
+    def print_balance(self):
+        print(f'Balance: {self.balance}\n')
+
     def add_income(self):
         print('Enter income:\n')
         try:
@@ -64,6 +67,18 @@ class Account:
         except ValueError:
             print('Error input!\n')
 
+    def do_transfer(self):
+        print('Transfer\nEnter card number:\n')
+        acc_to_transfer = input()
+        if not check_luhn(acc_to_transfer):
+            print('Probably you made a mistake in the card number. Please try again!\n')
+            return
+        if not storage.search_card_num(acc_to_transfer):  # todo do it!
+            print('Such a card does not exist.\n')
+            return
+
+        pass
+
     def delete_account(self):
         cur.execute('DELETE from card WHERE number = (?);', (self.card_num,))
         conn.commit()
@@ -74,9 +89,6 @@ class Account:
         storage.cards.pop(index)
         print('The account has been closed!\n')
 
-    def print_balance(self):
-        print(f'Balance: {self.balance}\n')
-
     def __str__(self):
         return 'Your card number:\n{}\nYour card PIN:\n{}\n'.format(self.card_num, self.pin)
 
@@ -86,6 +98,35 @@ def is_odd(num):
         return True  # Odd (нечетное)
     else:
         return False  # Even
+
+
+def check_luhn(number):
+    calc_part = number[:-1]
+    # print('calc part:', calc_part)  # todo del
+    checksum = []
+    odd = 1
+    for each in calc_part:
+        if odd:
+            checksum.append(int(each) * 2)
+            odd = 0
+        else:
+            checksum.append(int(each))
+            odd = 1
+    for each in checksum:
+        if int(each) > 9:
+            checksum[checksum.index(each)] = each - 9
+    res = 0
+    for each in checksum:
+        res = res + int(each)
+    calc = res
+    while calc % 10:
+        calc += 1
+    calculated_num = calc_part + ''.join(str(calc - res))
+    # print('luhn_calc:', calculated_num)  # todo del
+    if calculated_num != number:
+        return False
+    else:
+        return True
 
 
 def convert_sql_to_new_account(sql_element):
@@ -169,10 +210,12 @@ def menu_main_choice_treat():
         menu.print_menu()
         try:
             choice = int(input())
-            menu_funcs.get(choice)()
+            try:
+                menu_funcs.get(choice)()
+            except TypeError:
+                pass
         except ValueError:
             pass
-
 
 def exit_banking():
     print('Bye!')
@@ -193,6 +236,7 @@ def menu_login_treat():
         0: exit_banking,
         1: storage.login_in.print_balance,
         2: storage.login_in.add_income,
+        3: storage.login_in.do_transfer,
         4: storage.login_in.delete_account,
         5: storage.login_in.empty,
     }
