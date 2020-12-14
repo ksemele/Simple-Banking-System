@@ -6,3 +6,5 @@ course-info.yaml
 venv/
 
 __pycache__/
+
+.DS_Store

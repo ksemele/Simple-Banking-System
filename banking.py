@@ -34,6 +34,10 @@ class Account:
         cur.execute('INSERT INTO card VALUES (?,?,?,?);', (self.id, self.card_num, self.pin, self.balance))
         conn.commit()
 
+    def update_balance_in_sql(self):
+        cur.execute('UPDATE card SET balance = ? WHERE number = ?;', (self.balance, self.card_num))
+        conn.commit()
+
     def print_balance(self):
         print(f'Balance: {self.balance}\n')
 
@@ -41,10 +45,9 @@ class Account:
         print('Enter income:\n')
         try:
             income = int(input())
-            print('Add ', income, 'to ->', self.balance)  # todo del
+            # print('Add ', income, 'to ->', self.balance)  # todo del
             self.balance += income
-            cur.execute('UPDATE card SET balance = ? WHERE number = ?;', (self.balance, self.card_num))
-            conn.commit()
+            self.update_balance_in_sql()
             print('Income was added!\n')
         except ValueError:
             print('Error input!\n')
@@ -55,8 +58,11 @@ class Account:
         if not check_luhn_num(acc_to_transfer):
             print('Probably you made a mistake in the card number. Please try again!\n')
             return
-        if not storage.search_card_num(acc_to_transfer):  # todo do it!
+        if not storage.search_card_num(acc_to_transfer):
             print('Such a card does not exist.\n')
+            return
+        if acc_to_transfer == self.card_num:
+            print("You can't transfer money to the same account!\n")
             return
         print('Enter how much money you want to transfer:\n')
         try:
@@ -67,7 +73,15 @@ class Account:
             print('Not enough money!\n')
             return
         # todo do transfer && save to SQL
-        pass
+        else:
+            for each in storage.cards:
+                if each.card_num == acc_to_transfer:
+                    each.balance += money
+                    each.update_balance_in_sql()
+                    self.balance -= money
+                    self.update_balance_in_sql()
+                    print('Success!\n')
+                    break
 
     def delete_account(self):
         cur.execute('DELETE from card WHERE number = (?);', (self.card_num,))
@@ -274,7 +288,6 @@ def try_login():
 
 conn = sqlite3.connect('card.s3db')
 cur = conn.cursor()
-
 cur.execute("""CREATE TABLE IF NOT EXISTS card(
     id INTEGER,
     number TEXT,
@@ -285,8 +298,8 @@ conn.commit()
 storage = Storage()
 menu = MenuMain()
 
-for each in storage.cards:  # todo del - print all accounts in storage
-    print(each.card_num, each.pin, each.balance)
+# for each in storage.cards:  # todo del - print all accounts in storage
+#     print(each.card_num, each.pin, each.balance)
 
 menu_login = MenuLogin()
 menu_main_choice_treat()
