@@ -31,7 +31,7 @@ class Account:
         self.pin = ''.join(str(randint(0, 9)) for i in range(4))
 
     def save_to_sql(self):
-        cur.execute('INSERT INTO card VALUES (?,?,?,?);', (self.id, self.card_num, self.pin, self.balance))
+        cur.execute('INSERT INTO card (number, pin) VALUES (?, ?);', (self.card_num, self.pin))
         conn.commit()
 
     def update_balance_in_sql(self):
@@ -45,7 +45,6 @@ class Account:
         print('Enter income:\n')
         try:
             income = int(input())
-            # print('Add ', income, 'to ->', self.balance)  # todo del
             self.balance += income
             self.update_balance_in_sql()
             print('Income was added!\n')
@@ -72,7 +71,6 @@ class Account:
         if money > self.balance:
             print('Not enough money!\n')
             return
-        # todo do transfer && save to SQL
         else:
             for each in storage.cards:
                 if each.card_num == acc_to_transfer:
@@ -97,56 +95,6 @@ class Account:
         return 'Your card number:\n{}\nYour card PIN:\n{}\n'.format(self.card_num, self.pin)
 
 
-def is_odd(num):
-    if num % 2:
-        return True  # Odd (нечетное)
-    else:
-        return False  # Even
-
-
-def check_luhn_num(number):
-    calc_part = number[:-1]
-    calculated_num = calc_luhn_num(calc_part)
-    if calculated_num != number:
-        return False
-    else:
-        return True
-
-
-def calc_luhn_num(number):  # calculate luhn num from number
-    checksum = []
-    odd = 1
-    for each in number:
-        if odd:
-            checksum.append(int(each) * 2)
-            odd = 0
-        else:
-            checksum.append(int(each))
-            odd = 1
-    for each in checksum:
-        if int(each) > 9:
-            checksum[checksum.index(each)] = each - 9
-    res = 0
-    for each in checksum:
-        res = res + int(each)
-    calc = res
-    while calc % 10:
-        calc += 1
-    luhn_num = number + ''.join(str(calc - res))
-    return luhn_num
-
-
-def convert_sql_to_new_account(sql_element):
-    # print('parse this:', sql_element)  # todo tmp print RAW data
-    new_account = Account()
-    new_account.empty()
-    new_account.id = sql_element[0]
-    new_account.card_num = sql_element[1]
-    new_account.pin = sql_element[2]
-    new_account.balance = sql_element[3]
-    return new_account
-
-
 class Storage:
     __instance__ = None
     cards = []
@@ -167,7 +115,6 @@ class Storage:
 
     @staticmethod
     def get_instance():
-
         if not Storage.__instance__:
             Storage()
         return Storage.__instance__
@@ -213,6 +160,16 @@ class MenuMain:
             print(each)
 
 
+class MenuLogin:
+    elems = ['1. Balance', '2. Add income', '3. Do transfer', '4. Close account', '5. Log out', '0. Exit']
+
+    def print_menu(self):
+        for each in self.elems:
+            print(each)
+
+
+# ------------------- funcs for menus treating: -------------------
+
 def menu_main_choice_treat():
     storage = Storage.get_instance()
     menu_funcs = {
@@ -230,18 +187,6 @@ def menu_main_choice_treat():
                 pass
         except ValueError:
             pass
-
-def exit_banking():
-    print('Bye!')
-    exit()
-
-
-class MenuLogin:
-    elems = ['1. Balance', '2. Add income', '3. Do transfer', '4. Close account', '5. Log out', '0. Exit']
-
-    def print_menu(self):
-        for each in self.elems:
-            print(each)
 
 
 def menu_login_treat():
@@ -280,26 +225,89 @@ def try_login():
         if storage.login_in.pin == pin:
             cur.execute('SELECT balance FROM card WHERE number = (?)', (storage.login_in.card_num,))
             for each in cur:
-                storage.login_in.balance = each[0]  # todo how i can do this wich another variant???
+                storage.login_in.balance = each[0]  # todo how i can do this which another variant?
             return True
     else:
         return False
 
 
-conn = sqlite3.connect('card.s3db')
-cur = conn.cursor()
-cur.execute("""CREATE TABLE IF NOT EXISTS card(
-    id INTEGER,
-    number TEXT,
-    pin TEXT,
-    balance INTEGER DEFAULT 0
-    );""")
-conn.commit()
-storage = Storage()
-menu = MenuMain()
+# ------------------- support funcs: -------------------
 
-# for each in storage.cards:  # todo del - print all accounts in storage
-#     print(each.card_num, each.pin, each.balance)
+def is_odd(num):
+    if num % 2:
+        return True  # Odd (нечетное)
+    else:
+        return False  # Even
 
-menu_login = MenuLogin()
-menu_main_choice_treat()
+
+def check_luhn_num(number):
+    calc_part = number[:-1]
+    calculated_num = calc_luhn_num(calc_part)
+    if calculated_num != number:
+        return False
+    else:
+        return True
+
+
+# calculate luhn num for number - add checksum_last_digit
+
+def calc_luhn_num(number):
+    checksum = []
+    odd = 1
+    for each in number:
+        if odd:
+            checksum.append(int(each) * 2)
+            odd = 0
+        else:
+            checksum.append(int(each))
+            odd = 1
+    for each in checksum:
+        if int(each) > 9:
+            checksum[checksum.index(each)] = each - 9
+    res = 0
+    for each in checksum:
+        res = res + int(each)
+    calc = res
+    while calc % 10:
+        calc += 1
+    luhn_num = number + ''.join(str(calc - res))
+    return luhn_num
+
+
+def convert_sql_to_new_account(sql_element):
+    new_account = Account()
+    new_account.empty()
+    new_account.id = sql_element[0]
+    new_account.card_num = sql_element[1]
+    new_account.pin = sql_element[2]
+    new_account.balance = sql_element[3]
+    return new_account
+
+
+def exit_banking():
+    print('Bye!')
+    exit()
+
+
+if __name__ == '__main__':
+    conn = sqlite3.connect('card.s3db')
+    cur = conn.cursor()
+    cur.execute("""CREATE TABLE IF NOT EXISTS card(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        number TEXT,
+        pin TEXT,
+        balance INTEGER DEFAULT 0
+        );""")
+    conn.commit()
+    storage = Storage()
+    menu = MenuMain()
+
+    # uncomment this for print all accounts in storage after start:
+
+    print('id    number       pin  balance')
+    for each in storage.cards:
+        print(each.id, each.card_num, each.pin, each.balance)
+    print()
+
+    menu_login = MenuLogin()
+    menu_main_choice_treat()
