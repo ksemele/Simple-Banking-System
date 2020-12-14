@@ -24,29 +24,11 @@ class Account:
         self.card_num = '400000' + ''.join(str(randint(0, 9)) for i in range(9))  # wow!
         self.calc_luhn_last()
 
+    def calc_luhn_last(self):
+        self.card_num = calc_luhn_num(self.card_num)
+
     def rand_pin(self):
         self.pin = ''.join(str(randint(0, 9)) for i in range(4))
-
-    def calc_luhn_last(self):
-        checksum = []
-        odd = 1
-        for each in self.card_num:
-            if odd:
-                checksum.append(int(each) * 2)
-                odd = 0
-            else:
-                checksum.append(int(each))
-                odd = 1
-        for each in checksum:
-            if int(each) > 9:
-                checksum[checksum.index(each)] = each - 9
-        res = 0
-        for each in checksum:
-            res = res + int(each)
-        calc = res
-        while calc % 10:
-            calc += 1
-        self.card_num = self.card_num + ''.join(str(calc - res))
 
     def save_to_sql(self):
         cur.execute('INSERT INTO card VALUES (?,?,?,?);', (self.id, self.card_num, self.pin, self.balance))
@@ -70,13 +52,21 @@ class Account:
     def do_transfer(self):
         print('Transfer\nEnter card number:\n')
         acc_to_transfer = input()
-        if not check_luhn(acc_to_transfer):
+        if not check_luhn_num(acc_to_transfer):
             print('Probably you made a mistake in the card number. Please try again!\n')
             return
         if not storage.search_card_num(acc_to_transfer):  # todo do it!
             print('Such a card does not exist.\n')
             return
-
+        print('Enter how much money you want to transfer:\n')
+        try:
+            money = int(input())
+        except ValueError:
+            return
+        if money > self.balance:
+            print('Not enough money!\n')
+            return
+        # todo do transfer && save to SQL
         pass
 
     def delete_account(self):
@@ -100,12 +90,19 @@ def is_odd(num):
         return False  # Even
 
 
-def check_luhn(number):
+def check_luhn_num(number):
     calc_part = number[:-1]
-    # print('calc part:', calc_part)  # todo del
+    calculated_num = calc_luhn_num(calc_part)
+    if calculated_num != number:
+        return False
+    else:
+        return True
+
+
+def calc_luhn_num(number):  # calculate luhn num from number
     checksum = []
     odd = 1
-    for each in calc_part:
+    for each in number:
         if odd:
             checksum.append(int(each) * 2)
             odd = 0
@@ -121,12 +118,8 @@ def check_luhn(number):
     calc = res
     while calc % 10:
         calc += 1
-    calculated_num = calc_part + ''.join(str(calc - res))
-    # print('luhn_calc:', calculated_num)  # todo del
-    if calculated_num != number:
-        return False
-    else:
-        return True
+    luhn_num = number + ''.join(str(calc - res))
+    return luhn_num
 
 
 def convert_sql_to_new_account(sql_element):
@@ -177,6 +170,13 @@ class Storage:
         new_card.save_to_sql()
         self.cards_counter += 1
         print(new_card)
+
+    def search_card_num(self, card_num):
+        passbase = {c.card_num: c.pin for c in self.cards}
+        if self.cards_counter > 0 and card_num in passbase:
+            return True
+        else:
+            return False
 
     def search_card_pin(self, card_num):
         passbase = {c.card_num: c.pin for c in self.cards}
