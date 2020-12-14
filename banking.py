@@ -304,10 +304,10 @@ if __name__ == '__main__':
 
     # uncomment this for print all accounts in storage after start:
 
-    print('id    number       pin  balance')
-    for each in storage.cards:
-        print(each.id, each.card_num, each.pin, each.balance)
-    print()
+    # print('id    number       pin  balance')
+    # for each in storage.cards:
+    #     print(each.id, each.card_num, each.pin, each.balance)
+    # print()
 
     menu_login = MenuLogin()
     menu_main_choice_treat()
