@@ -20,7 +20,8 @@ First, make new `<venv>`:
 $ python3 -m venv venv
 ```
 Second, activate it and install needed packages:
-```$ source venv/bin/activate
+```
+$ source venv/bin/activate
 (venv)$ pip3 install -r requirements.txt
 ```
 Now you can run the program:
